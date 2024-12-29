@@ -108,7 +108,7 @@ export default function HomePage() {
             </button>
             <button
               type="button"
-              className="bg-white text-[#7B7B7B] py-4 px-8 rounded-xl font-medium"
+              className="bg-[#F4F4F5] text-[#000000] py-4 px-8 rounded-xl font-medium hover:border  hover:bg-white hover:border-[#3258E8] hover:text-[#565656]"
             >
               View More
             </button>
@@ -123,7 +123,7 @@ export default function HomePage() {
           </span>
           <h1 className="text-5xl font-bold pt-2">Special Trip Packages</h1>
         </div>
-        <div className="grid grid-cols-4 gap-6">
+        <div className="grid md:grid-cols-4 sm:grid-cols-2 gap-6">
           {Array.from({ length: 8 }).map((_, index) => (
             <CardItem key={index} />
           ))}

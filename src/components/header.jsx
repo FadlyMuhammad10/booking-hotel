@@ -15,7 +15,7 @@ export default function Header() {
         <nav className="container flex items-center justify-between pt-8">
           <div className=""></div>
           <ul className="flex items-center gap-4 ml-8 text-[#BBBDC3]">
-            <a href="">
+            <a href="/">
               <li className="hover:text-white">Home</li>
             </a>
             <a href="">

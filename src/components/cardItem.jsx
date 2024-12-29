@@ -30,7 +30,7 @@ export default function CardItem() {
         </button>
         <Link
           to="/hotel/1"
-          className="bg-white text-[#3258E8] py-2 px-6 rounded-xl font-medium"
+          className="bg-white text-[#3258E8] py-2 px-6 rounded-xl font-medium border border-[#3258E8] "
         >
           View Details
         </Link>
