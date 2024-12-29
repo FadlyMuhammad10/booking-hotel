@@ -11,8 +11,8 @@ export default function Header() {
 
   return (
     <>
-      <header className="absolute top-0 left-0 w-full z-10">
-        <nav className="container flex items-center justify-between pt-10">
+      <header className="absolute top-0 left-0 w-full z-10 bg-transparent">
+        <nav className="container flex items-center justify-between pt-8">
           <div className=""></div>
           <ul className="flex items-center gap-4 ml-8 text-[#BBBDC3]">
             <a href="">

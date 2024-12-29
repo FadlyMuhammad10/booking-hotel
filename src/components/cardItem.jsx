@@ -1,6 +1,7 @@
 import React from "react";
 import { FaLocationDot } from "react-icons/fa6";
 import { TiStarFullOutline } from "react-icons/ti";
+import { Link } from "react-router-dom";
 
 export default function CardItem() {
   return (
@@ -23,16 +24,16 @@ export default function CardItem() {
       <div className="flex flex-row gap-4 pt-4">
         <button
           type="button"
-          className="bg-[#3258E8] text-white py-2 px-6 rounded-xl font-semibold"
+          className="bg-[#3258E8] text-white py-2 px-6 rounded-xl font-semibold cursor-pointer"
         >
           Book Now
         </button>
-        <button
-          type="button"
+        <Link
+          to="/hotel/1"
           className="bg-white text-[#3258E8] py-2 px-6 rounded-xl font-medium"
         >
           View Details
-        </button>
+        </Link>
       </div>
     </div>
   );
