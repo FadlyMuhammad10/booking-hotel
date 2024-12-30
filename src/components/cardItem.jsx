@@ -1,11 +1,15 @@
 import React from "react";
 import { FaLocationDot } from "react-icons/fa6";
 import { TiStarFullOutline } from "react-icons/ti";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 export default function CardItem() {
+  const navigate = useNavigate();
   return (
-    <div className="card border shadow-md rounded-2xl  p-6">
+    <div
+      className="card border shadow-md rounded-2xl  p-6 cursor-pointer"
+      onClick={() => navigate("/hotel/1")}
+    >
       <img
         src="assets/images/hotel-1.jpg"
         alt=""
@@ -22,7 +26,7 @@ export default function CardItem() {
         <p className="pl-1">Jakarta, Indonesia</p>
       </span>
       <div className="flex flex-row gap-4 pt-4">
-        <button
+        {/* <button
           type="button"
           className="bg-[#3258E8] text-white py-2 px-6 rounded-xl font-semibold cursor-pointer"
         >
@@ -33,7 +37,9 @@ export default function CardItem() {
           className="bg-white text-[#3258E8] py-2 px-6 rounded-xl font-medium border border-[#3258E8] "
         >
           View Details
-        </Link>
+        </Link> */}
+
+        <span className="text-orange-500 font-semibold">$ 200</span>
       </div>
     </div>
   );
