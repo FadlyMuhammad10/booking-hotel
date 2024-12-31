@@ -60,14 +60,15 @@ export default function DetailCard() {
   }, [isOpen]);
   return (
     <>
-      <div className="relative">
-        <div className="bg-blue-800 w-full h-[204px]">
+      <div className="">
+        <div className="bg-blue-800 w-full h-[204px] relative">
           <Header />
+          <div className="container relative top-[100%] -translate-y-1/2 z-10">
+            <Search />
+          </div>
         </div>
-        <div className="z-100">
-          <Search />
-        </div>
-        <div className="container relative flex flex-row gap-8 -z-10">
+
+        <div className="container relative flex flex-row gap-8 mt-28 ">
           <div className="w-[70%] rounded-sm">
             <Carousel className="w-full">
               <CarouselContent>
@@ -87,7 +88,6 @@ export default function DetailCard() {
               <CarouselNext className="absolute right-0 -translate-x-1/2 " />
             </Carousel>
           </div>
-
           <div className="grid grid-rows-2 gap-4 w-[30%]">
             <div className="border rounded-lg  overflow-hidden">
               <iframe

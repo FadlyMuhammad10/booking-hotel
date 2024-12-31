@@ -26,8 +26,9 @@ export default function HomePage() {
           </h1>
         </div>
       </div>
-
-      <Search />
+      <div className="container -translate-y-[50%]">
+        <Search />
+      </div>
 
       <div className="container flex flex-row items-center mb-10">
         <div className="w-1/2 flex flex-wrap gap-14">
