@@ -6,6 +6,13 @@ import {
   CarouselPrevious,
 } from "@/components/ui/carousel";
 import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
   Table,
   TableBody,
   TableCell,
@@ -13,14 +20,9 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 
+import { useState } from "react";
+import { IoMdPerson } from "react-icons/io";
 import { IoClose, IoRestaurantOutline, IoWifiOutline } from "react-icons/io5";
 import { LuCircleParking } from "react-icons/lu";
 import { MdKeyboardArrowRight, MdOutlinePeopleOutline } from "react-icons/md";
@@ -31,8 +33,6 @@ import { TiStarFullOutline } from "react-icons/ti";
 import { Link } from "react-router-dom";
 import Header from "../../components/header";
 import Search from "../../components/search";
-import { IoMdPerson } from "react-icons/io";
-import { useEffect, useState } from "react";
 
 export default function DetailCard() {
   const [isOpen, setIsOpen] = useState(false);
@@ -44,20 +44,7 @@ export default function DetailCard() {
   const toggleModalClose = () => {
     setIsOpen(false);
   };
-  useEffect(() => {
-    if (isOpen) {
-      // Tambahkan class overflow-hidden ke body saat modal terbuka
-      document.body.classList.add("overflow-hidden");
-    } else {
-      // Hapus class overflow-hidden dari body saat modal tertutup
-      document.body.classList.remove("overflow-hidden");
-    }
 
-    // Bersihkan efek ketika komponen dilepas
-    return () => {
-      document.body.classList.remove("overflow-hidden");
-    };
-  }, [isOpen]);
   return (
     <>
       <div className="">
@@ -257,7 +244,10 @@ export default function DetailCard() {
             className="fixed inset-0  bg-black bg-opacity-50 flex justify-center items-center"
             onClick={toggleModalClose}
           >
-            <div className="bg-white  p-4 rounded-lg shadow-lg w-[60%] ">
+            <div
+              className="bg-white  p-4 rounded-lg shadow-lg w-[60%] "
+              onClick={(e) => e.stopPropagation()}
+            >
               <div className="flex flex-row justify-between items-center">
                 <h2 className="text-lg font-semibold text-black">
                   Standar Room
