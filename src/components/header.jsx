@@ -1,13 +1,48 @@
-import React, { useState } from "react";
+import axiosInstance from "@/utils/axios";
+import React, { useEffect, useState } from "react";
+import { FaUserCircle } from "react-icons/fa";
 import { IoMdClose } from "react-icons/io";
 
+const baseURL = import.meta.env.VITE_API_URL;
+
 export default function Header() {
+  // State untuk login
+  const [login, setLogin] = useState(false);
+
+  const [user, setUser] = useState({});
+  console.log("user", user);
+
+  // State untuk modal login
   const [isOpen, setIsOpen] = useState(false); // State untuk modal
 
-  // Fungsi untuk toggle modal
+  // Fungsi untuk toggle modal login
   const toggleModal = () => {
     setIsOpen(!isOpen);
   };
+
+  const handleLogin = () => {
+    try {
+      const redirectUrl = window.location.href; // Menyimpan URL halaman yang sedang dikunjungi
+      window.open(
+        `${baseURL}/auth/google?redirectUrl=${encodeURIComponent(redirectUrl)}`,
+        "_self"
+      );
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  // Frontend menunggu login selesai dan menangani state login
+  useEffect(() => {
+    const queryParams = new URLSearchParams(location.search);
+    const userData = queryParams.get("user");
+
+    if (userData) {
+      const parsedUser = JSON.parse(decodeURIComponent(userData));
+      setUser(parsedUser);
+      setLogin(true); // State login jadi true
+    }
+  }, [location]);
 
   return (
     <>
@@ -28,17 +63,36 @@ export default function Header() {
               <li className="hover:text-white">Contact Us</li>
             </a>
           </ul>
-          <div className="flex items-center gap-4">
-            <button onClick={toggleModal} className="text-white">
-              Sign In
-            </button>
-            <button
-              onClick={toggleModal}
-              className="bg-[#4086F5] text-white py-2 px-4 rounded-md"
-            >
-              Sign Up
-            </button>
-          </div>
+
+          {login ? (
+            <>
+              <div className="p-2 border border-white rounded-md flex items-center">
+                <div className="bg-white rounded-full">
+                  <FaUserCircle size={24} className="fill-[#4086F5]  " />
+                </div>
+                <div className="ml-2">
+                  <p className="text-sm font-semibold text-white">Rahmat</p>
+                </div>
+              </div>
+            </>
+          ) : (
+            <>
+              <div className="flex items-center gap-4">
+                <button
+                  onClick={toggleModal}
+                  className="text-white py-2 px-4 border border-white rounded-md"
+                >
+                  Sign In
+                </button>
+                <button
+                  onClick={toggleModal}
+                  className="bg-[#4086F5] text-white py-2 px-4 rounded-md"
+                >
+                  Sign Up
+                </button>
+              </div>
+            </>
+          )}
         </nav>
 
         {isOpen && (
@@ -84,7 +138,10 @@ export default function Header() {
               </div>
 
               <div className="flex flex-col gap-4">
-                <button className="bg-[#E8EDFF] text-[#3258E8] py-2 px-4 rounded-full flex justify-center">
+                <button
+                  className="bg-[#E8EDFF] text-[#3258E8] py-2 px-4 rounded-full flex justify-center"
+                  onClick={handleLogin}
+                >
                   <img
                     src="https://lh3.googleusercontent.com/COxitqgJr1sJnIDe8-jiKhxDx1FrYbtRHKJ9z_hELisAlapwE9LUPh6fcXIfb5vwpbMl4xl9H9TRFPc5NOO8Sb3VSgIBrfRYvW6cUA"
                     alt=""
