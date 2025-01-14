@@ -1,7 +1,10 @@
 import axiosInstance from "@/utils/axios";
 import React, { useEffect, useState } from "react";
+import { AiOutlineLogout } from "react-icons/ai";
+import { CiUser } from "react-icons/ci";
 import { FaUserCircle } from "react-icons/fa";
 import { IoMdClose } from "react-icons/io";
+import { IoCartOutline } from "react-icons/io5";
 
 const baseURL = import.meta.env.VITE_API_URL;
 
@@ -10,23 +13,23 @@ export default function Header() {
   const [login, setLogin] = useState(false);
 
   const [user, setUser] = useState({});
-  console.log("user", user);
 
   // State untuk modal login
   const [isOpen, setIsOpen] = useState(false); // State untuk modal
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   // Fungsi untuk toggle modal login
   const toggleModal = () => {
     setIsOpen(!isOpen);
   };
 
+  const toggleModalOpen = () => {
+    setIsModalOpen(!isModalOpen);
+  };
+
   const handleLogin = () => {
     try {
-      const redirectUrl = window.location.href; // Menyimpan URL halaman yang sedang dikunjungi
-      window.open(
-        `${baseURL}/auth/google?redirectUrl=${encodeURIComponent(redirectUrl)}`,
-        "_self"
-      );
+      window.open(`${baseURL}/auth/google`, "_self");
     } catch (error) {
       console.log(error);
     }
@@ -34,20 +37,39 @@ export default function Header() {
 
   // Frontend menunggu login selesai dan menangani state login
   useEffect(() => {
-    const queryParams = new URLSearchParams(location.search);
-    const userData = queryParams.get("user");
+    // Mengecek status login saat aplikasi dimuat
+    axiosInstance
+      .get(`/auth/user`, { withCredentials: true })
+      .then((response) => {
+        if (response?.data?.success) {
+          setLogin(true);
+          setUser(response?.data?.user);
+        }
+      })
+      .catch(() => {
+        setUser(null);
+        setLogin(false);
+      });
+  }, []);
 
-    if (userData) {
-      const parsedUser = JSON.parse(decodeURIComponent(userData));
-      setUser(parsedUser);
-      setLogin(true); // State login jadi true
-    }
-  }, [location]);
+  const handleLogout = () => {
+    axiosInstance
+      .get(`/auth/logout`, { withCredentials: true })
+      .then((response) => {
+        if (response?.data?.success) {
+          setLogin(false);
+          setUser(null);
+        }
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
 
   return (
     <>
       <header className="absolute top-0 left-0 w-full z-10 bg-transparent">
-        <nav className="container flex items-center justify-between pt-8">
+        <nav className="container flex items-center justify-between pt-8 ">
           <div className=""></div>
           <ul className="flex items-center gap-4 ml-8 text-[#BBBDC3]">
             <a href="/">
@@ -66,13 +88,41 @@ export default function Header() {
 
           {login ? (
             <>
-              <div className="p-2 border border-white rounded-md flex items-center">
+              <div
+                className="p-2 border border-white rounded-md flex items-center cursor-pointer relative"
+                onClick={toggleModalOpen}
+              >
                 <div className="bg-white rounded-full">
                   <FaUserCircle size={24} className="fill-[#4086F5]  " />
                 </div>
                 <div className="ml-2">
-                  <p className="text-sm font-semibold text-white">Rahmat</p>
+                  <p className="text-sm font-semibold text-white">
+                    {user?.displayName}
+                  </p>
                 </div>
+                {isModalOpen && (
+                  <>
+                    <div className="absolute top-12 right-0 w-[15rem] rounded-md bg-white z-50  ">
+                      <div className="flex flex-col ">
+                        <button className="flex items-center gap-2 px-4 hover:bg-gray-100 rounded-md py-2">
+                          <CiUser size={24} />
+                          <span>Profile</span>
+                        </button>
+                        <button className="flex items-center gap-2 px-4 hover:bg-gray-100 rounded-md py-2">
+                          <IoCartOutline size={24} />
+                          <span>Order & Trip</span>
+                        </button>
+                        <button
+                          className="flex items-center gap-2 px-4 hover:bg-gray-100 rounded-md py-2"
+                          onClick={handleLogout}
+                        >
+                          <AiOutlineLogout size={24} />
+                          <span>Logout</span>
+                        </button>
+                      </div>
+                    </div>
+                  </>
+                )}
               </div>
             </>
           ) : (
