@@ -44,6 +44,7 @@ export default function Header() {
         credentials: "include",
       })
       .then((response) => {
+        console.log(response);
         if (response?.data?.success) {
           setLogin(true);
           setUser(response?.data?.user);
