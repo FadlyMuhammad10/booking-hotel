@@ -39,7 +39,10 @@ export default function Header() {
   useEffect(() => {
     // Mengecek status login saat aplikasi dimuat
     axiosInstance
-      .get(`/auth/user`, { withCredentials: true })
+      .get(`/auth/user`, {
+        withCredentials: true,
+        credentials: "include",
+      })
       .then((response) => {
         if (response?.data?.success) {
           setLogin(true);
