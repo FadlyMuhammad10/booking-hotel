@@ -40,8 +40,8 @@ export default function Header() {
     // Mengecek status login saat aplikasi dimuat
     axiosInstance
       .get(`/auth/user`, {
-        // withCredentials: true,
-        credentials: "include",
+        withCredentials: true,
+        // credentials: "include",
       })
       .then((response) => {
         console.log(response);
