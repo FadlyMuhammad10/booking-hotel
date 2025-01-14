@@ -41,7 +41,7 @@ export default function Header() {
     axiosInstance
       .get(`/auth/user`, {
         withCredentials: true,
-        // credentials: "include",
+        credentials: "include",
       })
       .then((response) => {
         console.log(response);
