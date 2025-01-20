@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import { getHotels } from "@/services/guestService";
+import React, { useEffect, useState } from "react";
 import DatePicker from "react-datepicker";
 import { AiOutlineMinus, AiOutlinePlus } from "react-icons/ai";
 import { CiUser } from "react-icons/ci";
@@ -7,16 +8,27 @@ import { FaLocationDot } from "react-icons/fa6";
 import { HiOutlineChevronDown } from "react-icons/hi";
 import { IoSearchOutline } from "react-icons/io5";
 import { MdOutlineArrowForwardIos } from "react-icons/md";
+import { useNavigate, useSearchParams } from "react-router-dom";
 
 export default function Search() {
+  const [searchParams] = useSearchParams();
+  const locationParam = searchParams.get("location") || "";
+  const capacityParam = searchParams.get("capacity") || 2;
+  const startDateParam = searchParams.get("startDate") || null;
+  const endDateParam = searchParams.get("endDate") || null;
+
+  const [location, setLocation] = useState(locationParam);
+
   const [dateRange, setDateRange] = useState([null, null]); // [startDate, endDate]
   const [startDate, endDate] = dateRange;
   const [isDatePickerOpen, setIsDatePickerOpen] = useState(false);
   const [minDate, setMinDate] = useState(new Date());
 
+  const navigate = useNavigate();
+
   const [isOpenDropdownGuest, setIsOpenDropdownGuest] = useState(false);
 
-  const [adults, setAdults] = useState(2);
+  const [adults, setAdults] = useState(capacityParam);
   const [children, setChildren] = useState(0);
   const [rooms, setRooms] = useState(1);
 
@@ -27,6 +39,30 @@ export default function Search() {
   const increment = (setter, value) => setter(value + 1);
   const decrement = (setter, value) => {
     if (value > 0) setter(value - 1);
+  };
+
+  useEffect(() => {
+    setLocation(locationParam); // Update input ketika URL berubah
+    setAdults(parseInt(capacityParam));
+
+    if (startDateParam) {
+      const startDate = new Date(startDateParam);
+      const endDate = new Date(endDateParam);
+      setDateRange([startDate, endDate]);
+    }
+  }, [locationParam, capacityParam, startDateParam, endDateParam]);
+
+  const handleSearch = async () => {
+    // redirect ke halaman hasil pencarian
+    const searchParams = new URLSearchParams(window.location.search);
+
+    searchParams.set("location", location);
+    searchParams.set("capacity", adults);
+
+    if (startDate) searchParams.set("startDate", startDate.toISOString());
+    if (endDate) searchParams.set("endDate", endDate.toISOString());
+
+    navigate(`/search?${searchParams.toString()}`);
   };
   return (
     <>
@@ -39,6 +75,8 @@ export default function Search() {
             type="text"
             placeholder="Where Are You Going ?"
             className="ml-3   focus:outline-none placeholder:text-[#848484]"
+            value={location}
+            onChange={(e) => setLocation(e.target.value)}
           />
         </div>
 
@@ -203,6 +241,7 @@ export default function Search() {
         <button
           type="button"
           className="bg-[#3258E8] text-white py-4 px-8 rounded-xl "
+          onClick={handleSearch}
         >
           <IoSearchOutline size={28} color="white" />
         </button>

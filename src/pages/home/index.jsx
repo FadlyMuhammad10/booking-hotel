@@ -3,8 +3,10 @@ import React from "react";
 import CardItem from "../../components/cardItem";
 import Header from "../../components/header";
 import Search from "../../components/search";
+import { useLoaderData } from "react-router-dom";
 
 export default function HomePage() {
+  const hotels = useLoaderData();
   return (
     <>
       <div className="relative">
@@ -125,8 +127,8 @@ export default function HomePage() {
           <h1 className="text-5xl font-bold pt-2">Special Trip Packages</h1>
         </div>
         <div className="grid md:grid-cols-4 sm:grid-cols-2 gap-6">
-          {Array.from({ length: 8 }).map((_, index) => (
-            <CardItem key={index} />
+          {hotels.map((hotel, i) => (
+            <CardItem key={i} data={hotel} />
           ))}
         </div>
       </div>
