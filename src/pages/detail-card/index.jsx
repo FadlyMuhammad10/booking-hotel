@@ -35,9 +35,11 @@ import Header from "../../components/header";
 import Search from "../../components/search";
 import formatRupiah from "@/utils/formatRupiah";
 import { getRoomsById } from "@/services/guestService";
+import { useMutation } from "react-query";
 
 export default function DetailCard() {
   const hotel = useLoaderData();
+  console.log("hotel", hotel);
 
   const [isOpen, setIsOpen] = useState(false);
   const [room, setRoom] = useState({});
@@ -51,6 +53,10 @@ export default function DetailCard() {
 
   const toggleModalClose = () => {
     setIsOpen(false);
+  };
+
+  const handleSubmit = async (values) => {
+    console.log(values);
   };
 
   return (

@@ -42,3 +42,13 @@ export const getRoomsById = async (id) => {
     throw error; // Melempar error agar bisa ditangani di loader
   }
 };
+
+export const postBooking = async (data) => {
+  try {
+    const res = await axiosInstance.post("/booking", data);
+    return res.data.data; // Mengembalikan data yang diinginkan
+  } catch (error) {
+    console.error("Error fetching hotels:", error);
+    throw error; // Melempar error agar bisa ditangani di loader
+  }
+};

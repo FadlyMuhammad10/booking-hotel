@@ -1,6 +1,7 @@
 import { getHotels } from "@/services/guestService";
 import React, { useEffect, useState } from "react";
 import DatePicker from "react-datepicker";
+import { useForm } from "react-hook-form";
 import { AiOutlineMinus, AiOutlinePlus } from "react-icons/ai";
 import { CiUser } from "react-icons/ci";
 import { FaRegCalendarAlt } from "react-icons/fa";
@@ -9,6 +10,8 @@ import { HiOutlineChevronDown } from "react-icons/hi";
 import { IoSearchOutline } from "react-icons/io5";
 import { MdOutlineArrowForwardIos } from "react-icons/md";
 import { useNavigate, useSearchParams } from "react-router-dom";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
 
 export default function Search() {
   const [searchParams] = useSearchParams();
@@ -19,7 +22,27 @@ export default function Search() {
 
   const [location, setLocation] = useState(locationParam);
 
-  const [dateRange, setDateRange] = useState([null, null]); // [startDate, endDate]
+  const {
+    register,
+    formState: { errors },
+    handleSubmit,
+  } = useForm({
+    resolver: zodResolver(
+      z.object({
+        location: z
+          .string({
+            required_error: "Location is required",
+            message: "Location is required",
+          })
+          .min(1, { message: "Location is required" }),
+      })
+    ),
+  });
+
+  const [dateRange, setDateRange] = useState([
+    new Date(),
+    new Date(new Date().setDate(new Date().getDate() + 1)),
+  ]); // [startDate, endDate]
   const [startDate, endDate] = dateRange;
   const [isDatePickerOpen, setIsDatePickerOpen] = useState(false);
   const [minDate, setMinDate] = useState(new Date());
@@ -65,19 +88,25 @@ export default function Search() {
     navigate(`/search?${searchParams.toString()}`);
   };
   return (
-    <>
+    <form onSubmit={handleSubmit(handleSearch)}>
       <div className="p-6 shadow-md bg-white rounded-r-3xl rounded-l-3xl flex flex-row justify-between ">
-        <div className="border max-w-max p-4 rounded-md flex items-center">
+        <div className="border max-w-max p-4 rounded-md flex items-center relative">
           <div className="bg-[#E8EDFF] p-2 rounded-md">
             <FaLocationDot size={24} color="#3258E8" />
           </div>
           <input
+            {...register("location")}
             type="text"
             placeholder="Where Are You Going ?"
             className="ml-3   focus:outline-none placeholder:text-[#848484]"
             value={location}
             onChange={(e) => setLocation(e.target.value)}
           />
+          {errors.location && (
+            <span className="text-red-500 text-sm absolute  left-2 bottom-1 translate-x-1/2 error-message">
+              {errors?.location?.message}
+            </span>
+          )}
         </div>
 
         <div
@@ -239,13 +268,12 @@ export default function Search() {
         </button>
 
         <button
-          type="button"
+          type="submit"
           className="bg-[#3258E8] text-white py-4 px-8 rounded-xl "
-          onClick={handleSearch}
         >
           <IoSearchOutline size={28} color="white" />
         </button>
       </div>
-    </>
+    </form>
   );
 }
