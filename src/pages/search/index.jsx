@@ -48,7 +48,7 @@ export default function SearchPage() {
   }, [query]);
 
   const filteredHotels = hotels.filter((hotel) => {
-    console.log(hotel);
+    // console.log(hotel);
     const matchRating =
       !filters.rating.length || filters.rating.includes(hotel.rating);
 
