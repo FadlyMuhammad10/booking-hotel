@@ -10,7 +10,7 @@ export default function HomePage() {
   return (
     <>
       <div className="relative">
-        <div className="w-full h-[704px]">
+        <div className="w-full h-[704px] relative">
           <img
             src="assets/images/banner.png"
             alt=""
@@ -18,7 +18,7 @@ export default function HomePage() {
           />
           <div className="absolute inset-0 z-0 w-full h-full bg-black opacity-[30%]"></div>
         </div>
-        <Header />
+        <Header classNames="absolute  top-0 left-0 w-full z-10" />
         <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-center">
           <h3 className="text-[#BBBDC3] text-xl font-semibold mb-2">
             Life Is Too Short For A Wide And Beautiful World

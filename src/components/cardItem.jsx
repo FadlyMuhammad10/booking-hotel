@@ -4,12 +4,12 @@ import { TiStarFullOutline } from "react-icons/ti";
 import { Link, useNavigate } from "react-router-dom";
 import formatRupiah from "@/utils/formatRupiah";
 
-export default function CardItem({ data }) {
+export default function CardItem({ data, query }) {
   const navigate = useNavigate();
   return (
     <div
       className="card border shadow-md rounded-2xl  p-6 cursor-pointer"
-      onClick={() => navigate(`/hotel/${data._id}`)}
+      onClick={() => navigate(`/hotel/${data._id}?${query}`)}
     >
       <img
         src={`${data.images[0].image_url}`}

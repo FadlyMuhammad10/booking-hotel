@@ -6,13 +6,6 @@ import {
   CarouselPrevious,
 } from "@/components/ui/carousel";
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import {
   Table,
   TableBody,
   TableCell,
@@ -21,7 +14,11 @@ import {
   TableRow,
 } from "@/components/ui/table";
 
-import { useState } from "react";
+import DynamicSelect from "@/components/dynamicSelect";
+import { AuthContext } from "@/context/AuthContext";
+import { getRoomsById } from "@/services/guestService";
+import formatRupiah from "@/utils/formatRupiah";
+import { useContext, useState } from "react";
 import { IoMdPerson } from "react-icons/io";
 import { IoClose, IoRestaurantOutline, IoWifiOutline } from "react-icons/io5";
 import { LuCircleParking } from "react-icons/lu";
@@ -30,19 +27,38 @@ import { PiElevatorLight, PiSwimmingPoolDuotone } from "react-icons/pi";
 import { Ri24HoursLine } from "react-icons/ri";
 import { TbAirConditioning, TbRulerMeasure } from "react-icons/tb";
 import { TiStarFullOutline } from "react-icons/ti";
-import { Link, useLoaderData } from "react-router-dom";
+import {
+  Link,
+  useLoaderData,
+  useNavigate,
+  useSearchParams,
+} from "react-router-dom";
 import Header from "../../components/header";
 import Search from "../../components/search";
-import formatRupiah from "@/utils/formatRupiah";
-import { getRoomsById } from "@/services/guestService";
-import { useMutation } from "react-query";
 
 export default function DetailCard() {
+  const { login } = useContext(AuthContext);
   const hotel = useLoaderData();
-  console.log("hotel", hotel);
+  // console.log(hotel);
+
+  const [searchParams] = useSearchParams();
+
+  const startDate = searchParams.get("startDate");
+  const endDate = searchParams.get("endDate");
 
   const [isOpen, setIsOpen] = useState(false);
   const [room, setRoom] = useState({});
+
+  const navigate = useNavigate();
+
+  const [selectedRoomUnits, setSelectedRoomUnits] = useState({});
+
+  const handleSelectChange = (roomId, unit) => {
+    setSelectedRoomUnits((prevSelectedRoomUnits) => ({
+      ...prevSelectedRoomUnits,
+      [roomId]: unit,
+    }));
+  };
 
   const toggleModalOpen = async (data) => {
     const room = await getRoomsById(data);
@@ -55,15 +71,32 @@ export default function DetailCard() {
     setIsOpen(false);
   };
 
-  const handleSubmit = async (values) => {
-    console.log(values);
+  const handleChooseRoom = async (roomId) => {
+    const selectedUnit = selectedRoomUnits[roomId];
+
+    if (!selectedUnit) {
+      alert("Please select a room unit first!");
+      return;
+    }
+
+    console.log("Selected Hotel ID:", hotel._id);
+    console.log("Selected Room ID:", roomId);
+    console.log("Selected Room Unit Id:", selectedUnit);
+
+    if (login) {
+      navigate(`/booking?startDate=${startDate}&endDate=${endDate}`);
+    } else {
+      alert("Please login first!", navigate(`/`));
+    }
   };
 
   return (
     <>
       <div>
         <div className="bg-blue-800 w-full h-[204px] relative">
-          <Header />
+          <Header
+            classNames={"absolute top-0 left-0 w-full z-10 bg-transparent"}
+          />
           <div className="container relative top-[100%] -translate-y-1/2 z-10">
             <Search />
           </div>
@@ -218,25 +251,22 @@ export default function DetailCard() {
                           {formatRupiah(room.price)}
                         </TableCell>
                         <TableCell className=" border-r ">
-                          <Select className="w-full ">
-                            <SelectTrigger className="">
-                              <SelectValue placeholder="0" />
-                            </SelectTrigger>
-                            <SelectContent>
-                              {Array.from({
-                                length: room.roomUnits.length,
-                              }).map((_, index) => (
-                                <SelectItem key={index} value={index + 1}>
-                                  {room.roomUnits[index].roomNumber}
-                                </SelectItem>
-                              ))}
-                            </SelectContent>
-                          </Select>
+                          <DynamicSelect
+                            items={room.roomUnits}
+                            selectedValue={selectedRoomUnits[room._id]}
+                            placeholder="Select Unit"
+                            onChange={(value) =>
+                              handleSelectChange(room._id, value)
+                            }
+                            valueKey="_id"
+                            labelKey="roomNumber"
+                          />
                         </TableCell>
                         <TableCell className=" border-r text-center">
                           <button
                             type="button"
                             className="bg-orange-500 text-white py-2 px-6 rounded-xl cursor-pointer font-semibold text-medium"
+                            onClick={() => handleChooseRoom(room._id)}
                           >
                             Choose
                           </button>

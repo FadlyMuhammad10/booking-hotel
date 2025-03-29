@@ -1,12 +1,10 @@
+import BookingPage from "@/pages/booking";
 import DetailCard from "@/pages/detail-card";
 import HomePage from "@/pages/home";
 import SearchPage from "@/pages/search";
-import {
-  getHotels,
-  getHotelsById,
-  getHotelsBySearch,
-} from "@/services/guestService";
+import { getHotels, getHotelsById } from "@/services/guestService";
 import { createBrowserRouter } from "react-router-dom";
+import ProtectedRoute from "./protectedRoute";
 
 const router = createBrowserRouter([
   {
@@ -30,6 +28,16 @@ const router = createBrowserRouter([
   {
     path: "/search",
     element: <SearchPage />,
+  },
+  {
+    path: "/booking",
+
+    // element: <BookingPage />,
+    element: (
+      <ProtectedRoute>
+        <BookingPage />
+      </ProtectedRoute>
+    ),
   },
 ]);
 

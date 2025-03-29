@@ -12,6 +12,8 @@ export default function SearchPage() {
 
   const location = searchParams.get("location");
   const capacity = searchParams.get("capacity");
+  const startDate = searchParams.get("startDate");
+  const endDate = searchParams.get("endDate");
 
   const query = `location=${location}&capacity=${capacity}`;
 
@@ -84,7 +86,11 @@ export default function SearchPage() {
             <p className="text-red text-center z-50">No hotels found</p>
           )}
           {filteredHotels.map((hotel, i) => (
-            <CardItem key={i} data={hotel} />
+            <CardItem
+              key={i}
+              data={hotel}
+              query={query + `&startDate=${startDate}&endDate=${endDate}`}
+            />
           ))}
         </div>
       </div>
