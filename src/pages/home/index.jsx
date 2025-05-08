@@ -1,38 +1,11 @@
-import React from "react";
-
-import CardItem from "../../components/cardItem";
-import Header from "../../components/header";
-import Search from "../../components/search";
 import { useLoaderData } from "react-router-dom";
+import CardItem from "../../components/cardItem";
 
 export default function HomePage() {
   const hotels = useLoaderData();
   return (
     <>
-      <div className="relative">
-        <div className="w-full h-[704px] relative">
-          <img
-            src="assets/images/banner.png"
-            alt=""
-            className="w-full h-full object-cover"
-          />
-          <div className="absolute inset-0 z-0 w-full h-full bg-black opacity-[30%]"></div>
-        </div>
-        <Header classNames="absolute  top-0 left-0 w-full z-10" />
-        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-center">
-          <h3 className="text-[#BBBDC3] text-xl font-semibold mb-2">
-            Life Is Too Short For A Wide And Beautiful World
-          </h3>
-          <h1 className="text-white text-6xl font-bold">
-            Enjoy Your Tour With Heavenly <br /> Experience You{"'"}ve Never Had
-          </h1>
-        </div>
-      </div>
-      <div className="container -translate-y-[50%]">
-        <Search />
-      </div>
-
-      <div className="container flex flex-row items-center mb-10">
+      <div className="container flex flex-row items-center my-16">
         <div className="w-1/2 flex flex-wrap gap-14">
           <div className="flex flex-col gap-10">
             <div className="w-[310px] h-[260px] border rounded-2xl relative">
@@ -102,18 +75,12 @@ export default function HomePage() {
               <p className="text-[#848484]">Happy Tourists</p>
             </div>
           </div>
-          <div className="flex flex-row gap-4 pt-2">
+          <div className="flex  pt-2">
             <button
               type="button"
               className="bg-[#3258E8] text-white py-4 px-8 rounded-xl font-semibold"
             >
               Get Started
-            </button>
-            <button
-              type="button"
-              className="bg-[#F4F4F5] text-[#000000] py-4 px-8 rounded-xl font-medium hover:border  hover:bg-white hover:border-[#3258E8] hover:text-[#565656]"
-            >
-              View More
             </button>
           </div>
         </div>

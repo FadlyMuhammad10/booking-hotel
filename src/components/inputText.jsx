@@ -9,6 +9,7 @@ export default function InputText({
   label,
   disabled = false,
   register = () => {},
+  errors,
 }) {
   return (
     <div>
@@ -23,6 +24,7 @@ export default function InputText({
         className="w-full rounded-full focus:outline-none border-[#7186A0] focus:text-black "
         disabled={disabled}
       />
+      {errors && <span className="text-red-500 text-sm ">{errors}</span>}
     </div>
   );
 }

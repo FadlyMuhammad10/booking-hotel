@@ -1,215 +1,212 @@
-import DatePickerInput from "@/components/datePickerInput";
-import DynamicSelect from "@/components/dynamicSelect";
-import Header from "@/components/header";
 import InputText from "@/components/inputText";
 import { Button } from "@/components/ui/button";
-import { AuthContext } from "@/context/AuthContext";
+import { Label } from "@/components/ui/label";
+import { postBooking } from "@/services/guestService";
 import formatRupiah from "@/utils/formatRupiah";
+import { bookingSchema } from "@/utils/zodSchema";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useContext, useState } from "react";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
-import { FaRegCheckCircle } from "react-icons/fa";
-import { FaToilet, FaWifi } from "react-icons/fa6";
-import { IoMdPerson } from "react-icons/io";
-import { IoBed } from "react-icons/io5";
-import { MdOutlineEventNote, MdRoomService } from "react-icons/md";
-import { RiFileList3Line } from "react-icons/ri";
-import { useSearchParams } from "react-router-dom";
-import { z } from "zod";
+import { useMutation } from "react-query";
+import {
+  useLoaderData,
+  useLocation,
+  useNavigate,
+  useParams,
+} from "react-router-dom";
 
 export default function BookingPage() {
-  const { user } = useContext(AuthContext);
+  const id = useParams().id;
+  const hotel = useLoaderData();
+  const navigate = useNavigate();
 
-  const [searchParams] = useSearchParams();
+  const location = useLocation();
 
-  const startDate = searchParams.get("startDate");
-  const endDate = searchParams.get("endDate");
+  const { roomId, roomUnitId, duration, startDate, endDate, uniqueCode } =
+    location.state;
 
   const {
     register,
     handleSubmit,
     formState: { errors },
   } = useForm({
-    resolver: zodResolver({
-      name: z.string(),
-      email: z.string().email("Invalid email address").max(50),
-    }),
-    defaultValues: {
-      name: user?.displayName,
-      email: user?.email,
-    },
+    resolver: zodResolver(bookingSchema),
   });
 
-  const [selectedMobileNumber, setSelectedMobileNumber] = useState("");
+  const { isLoading, mutateAsync } = useMutation({
+    mutationFn: (data) => postBooking(data),
+  });
 
-  const [dateRange, setDateRange] = useState([
-    new Date(startDate),
-    new Date(endDate),
-  ]);
+  const handleBooking = async (data) => {
+    try {
+      const payload = {
+        ...data,
+        hotel_id: id,
+        room_id: roomId,
+        roomUnit_id: roomUnitId,
+        duration,
+        checkInDate: startDate,
+        checkOutDate: endDate,
+        total_price:
+          hotel?.rooms.find((room) => room._id === roomId)?.price * duration -
+          uniqueCode,
+      };
+      const res = await mutateAsync(payload);
+
+      window.location.replace(res.redirect_url);
+    } catch (error) {
+      console.log("error", error);
+    }
+  };
 
   return (
-    <div className="block bg-customGray">
-      <Header classNames="bg-blue-800" />
-      <form>
-        <div className="container h-screen py-16">
-          <div className=" h-full   rounded-md w-[75%] mx-auto">
-            <h1 className="text-2xl font-semibold">Booking Details</h1>
-            <div className="mt-4 flex flex-row  items-start">
-              <div className="flex flex-col">
-                <div className=" bg-white shadow-sm  rounded-md  flex flex-col ">
-                  <div className="p-4 font-semibold">Hotel A</div>
-                  <div className="w-[375px]">
-                    <img
-                      src="assets/images/hotel-1.jpg"
-                      alt=""
-                      className="w-full h-[150px] object-cover object-center "
-                    />
+    <>
+      <div className="container py-16">
+        <h1 className="text-3xl font-semibold text-center text-[#152C5B]">
+          Booking Details
+        </h1>
+        <form onSubmit={handleSubmit(handleBooking)}>
+          <div className=" w-[75%] mx-auto mt-14 ">
+            <div className="flex flex-row items-start gap-16">
+              <div className="flex flex-col w-2/4">
+                <img
+                  src={hotel?.images[0]?.image_url}
+                  alt="thumbnail"
+                  className="w-full h-[270px] object-cover object-center rounded-2xl"
+                />
+
+                <div className="mt-4 inline-flex items-center justify-between">
+                  <div className="flex flex-col">
+                    <span className="text-lg text-[#152C5B]">
+                      {hotel?.name}
+                    </span>
+                    <p className="text-sm text-[#152C5B]">
+                      {hotel?.rooms.find((room) => room._id === roomId)?.name}
+                    </p>
+                    <p className="text-sm text-[#848484]">
+                      {hotel?.city}, Indonesia
+                    </p>
                   </div>
-                  <div className="p-4 mt-2">
-                    <span className="font-semibold">Deluxe Room</span>
-                  </div>
-                  <div className="flex flex-col gap-2 px-4">
-                    <div className="flex flex-row items-center  text-gray-400">
-                      <IoMdPerson />
-                      <span className="ml-2 text-sm">2 Guest</span>
-                    </div>
-                    <div className="flex flex-row items-center  text-gray-400">
-                      <IoBed />
-                      <span className="ml-2 text-sm">Queen Bad</span>
-                    </div>
-                    <div className="flex flex-row gap-2 items-center  text-gray-400">
-                      <FaWifi />
-                      <MdRoomService />
-                      <FaToilet />
-                    </div>
-                  </div>
-                  <div className="border-b my-4"></div>
-                  <div className="px-4 pb-4 flex flex-row justify-between items-center">
-                    <div className="flex flex-row items-center gap-2">
-                      <RiFileList3Line />
-                      <span className="text-sm font-semibold">Room Price</span>
-                    </div>
-                    <div className="font-semibold text-orange-600">
-                      {formatRupiah(1000000)}
-                    </div>
+                  <div className="inline-flex">
+                    <span className="font-semibold text-[#152C5B]">
+                      {`${formatRupiah(
+                        hotel?.rooms?.find((room) => room._id === roomId)
+                          .price * duration
+                      )}`}
+                    </span>
+                    <p className="text-sm text-[#848484]">
+                      {" "}
+                      /{" "}
+                      <span className="font-semibold text-[#152C5B]">
+                        {duration} night
+                      </span>
+                    </p>
                   </div>
                 </div>
-                <div className="bg-white shadow-sm  rounded-md p-4 flex flex-col mt-6">
-                  <div className="inline-flex items-center">
-                    <MdOutlineEventNote />
-                    <span className="font-semibold ml-2">Cancel Policy</span>
+                <div className=" border-t mt-4">
+                  <p className="text-[#152C5B]">Transfer Pembayaran:</p>
+                  <div className="flex items-center justify-between">
+                    <p className="text-[#152C5B]">Unique Code:</p>
+                    <p className="font-bold text-[#FF2D2D]">
+                      -{formatRupiah(uniqueCode)}
+                    </p>
                   </div>
-                  <div className="flex flex-col mt-4 gap-2">
-                    <div className="flex flex-row items-center gap-2 text-gray-500 font-bold">
-                      <FaRegCheckCircle />
-                      <span className="text-sm">
-                        Reservasion is Non Refundable
-                      </span>
-                    </div>
-                    <div className="flex flex-row items-center gap-2 text-gray-500 font-bold">
-                      <FaRegCheckCircle />
-                      <span className="text-sm">
-                        Non Reschedulable and Non Cancellable
-                      </span>
-                    </div>
+                  <div className="flex items-center justify-between">
+                    <p className="text-[#152C5B]">Grand Total:</p>
+                    <p className="font-bold text-[22px] leading-[33px] text-[#0D903A]">
+                      {formatRupiah(
+                        hotel?.rooms.find((room) => room._id === roomId)
+                          ?.price *
+                          duration -
+                          uniqueCode
+                      )}
+                    </p>
                   </div>
                 </div>
               </div>
-              <div className=" w-full ml-6">
-                <div className="flex flex-col">
-                  <div className=" bg-white shadow-sm  rounded-md p-4 flex flex-col">
-                    <div className=" font-semibold">Customer Details</div>
-                    <div className="flex flex-col mt-4 gap-4">
-                      <InputText
-                        register={register}
-                        label={"Full Name"}
-                        name={"name"}
-                        type={"text"}
-                        placeholder={"John Doe"}
+              <div className="w-1/4">
+                <div className="flex flex-col  gap-4">
+                  <InputText
+                    register={register}
+                    label={"Full Name"}
+                    name={"name"}
+                    type={"text"}
+                    placeholder={"John Doe"}
+                    errors={errors.name?.message}
+                  />
+                  <InputText
+                    register={register}
+                    label={"Email"}
+                    name={"email"}
+                    type={"email"}
+                    placeholder={"oBk3T@example.com"}
+                    errors={errors.email?.message}
+                  />
+                  <InputText
+                    register={register}
+                    label={"Phone Number"}
+                    name={"phone_number"}
+                    type={"text"}
+                    placeholder={"+628123456789"}
+                    errors={errors.phone_number?.message}
+                  />
+                  <div className="flex flex-col gap-2">
+                    <Label htmlFor={"startDate"} className=" text-sm">
+                      Start Date
+                    </Label>
+                    <div className="flex items-center rounded-full border border-[#7186A0] px-3 py-2 gap-[10px] bg-[#F7F7FD]">
+                      <img
+                        src="/assets/icons/calendar-black.svg"
+                        className="w-6 h-6"
+                        alt="icon"
                       />
-                      <InputText
-                        register={register}
-                        label={"Email"}
-                        name={"email"}
-                        type={"email"}
-                        placeholder={"oBk3T@example.com"}
-                      />
-                      <div className="flex flex-row items-end justify-between">
-                        <div className="w-1/3">
-                          <DynamicSelect
-                            items={[
-                              { value: "+62", label: "Indonesia (+62)" },
-                              { value: "+1", label: "United States (+1)" },
-                              { value: "+91", label: "India (+91)" },
-                            ].sort((a, b) => a.label.localeCompare(b.label))}
-                            onChange={(value) => {
-                              console.log(value);
-                              setSelectedMobileNumber(value);
-                            }}
-                            selectedValue={selectedMobileNumber}
-                            labelKey="label"
-                            valueKey="value"
-                            placeholder={"Mobile Number"}
-                          />
-                        </div>
-                        <InputText
-                          label={"Phone Number"}
-                          name={"phone"}
-                          type={"text"}
-                          placeholder={"812345678"}
-                        />
-                        <InputText
-                          label={"Number of Room"}
-                          name={"unit"}
-                          type={"text"}
-                          placeholder={"401"}
-                          disabled={true}
-                        />
-                      </div>
-                      <DatePickerInput
-                        dateRange={dateRange}
-                        setDateRange={setDateRange}
-                        disabled={true}
-                      />
+                      <p className="font-semibold">
+                        {new Date(startDate).toLocaleDateString("id-ID", {
+                          day: "numeric",
+                          month: "long",
+                          year: "numeric",
+                        })}
+                      </p>
                     </div>
                   </div>
-                  <div className=" bg-white shadow-sm  rounded-md p-4 flex flex-col mt-6">
-                    <div className=" font-semibold">Payment Details</div>
-                    <div className="flex flex-col mt-4 gap-4">
-                      <div className="flex flex-row justify-between">
-                        <p>Room Price</p>
-                        {formatRupiah(1000000)}
-                      </div>
-                      <div className="flex flex-row justify-between">
-                        <p>
-                          Tax {"("}10%{")"}
-                        </p>
-                        {formatRupiah(1000000)}
-                      </div>
-                      <div className="border-b" />
-                      <div className="flex flex-row justify-between">
-                        <p className="font-semibold">Total</p>
-                        <span className="font-semibold text-orange-600">
-                          {formatRupiah(1000000)}
-                        </span>
-                      </div>
-                      <Button
-                        variant={"default"}
-                        size={"lg"}
-                        onClick={() => {
-                          console.log("Continue to Payment");
-                        }}
-                      >
-                        Continue to Payment
-                      </Button>
+                  <div className="flex flex-col gap-2">
+                    <Label htmlFor={"endDate"} className=" text-sm">
+                      End Date
+                    </Label>
+                    <div className="flex items-center rounded-full border border-[#7186A0] px-3 py-2 gap-[10px] bg-[#F7F7FD]">
+                      <img
+                        src="/assets/icons/calendar-black.svg"
+                        className="w-6 h-6"
+                        alt="icon"
+                      />
+                      <p className="font-semibold">
+                        {new Date(endDate).toLocaleDateString("id-ID", {
+                          day: "numeric",
+                          month: "long",
+                          year: "numeric",
+                        })}
+                      </p>
                     </div>
                   </div>
                 </div>
               </div>
             </div>
+            <div className="flex flex-col gap-2 items-center justify-center mt-16">
+              <Button
+                type="submit"
+                variant="primary"
+                className=" bg-[#3258E8] text-white w-[300px]"
+                disabled={isLoading}
+              >
+                {`${isLoading ? "Loading..." : "Continue to Book"}`}
+              </Button>
+              <Button variant="outline" className="w-[300px]">
+                Cancel
+              </Button>
+            </div>
           </div>
-        </div>
-      </form>
-    </div>
+        </form>
+      </div>
+    </>
   );
 }

@@ -9,6 +9,9 @@ export default {
       container: {
         center: true,
         padding: "1rem",
+        screens: {
+          "2xl": "1440px",
+        },
       },
       borderRadius: {
         lg: "var(--radius)",

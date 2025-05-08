@@ -6,8 +6,8 @@ import { FaUserCircle } from "react-icons/fa";
 import { IoMdClose } from "react-icons/io";
 import { IoCartOutline } from "react-icons/io5";
 
-export default function Header({ classNames }) {
-  const { login, user, handleLogout, handleLogin } = useContext(AuthContext);
+export default function Header() {
+  // const { login, user, handleLogout, handleLogin } = useContext(AuthContext);
 
   const [modalState, setModalState] = useState({
     isOpen: false,
@@ -23,35 +23,38 @@ export default function Header({ classNames }) {
   };
 
   return (
-    <header className={`${classNames}  `}>
-      <nav className="container flex items-center justify-between py-8 ">
-        <div className=""></div>
-        <ul className="flex items-center gap-4 ml-8 text-[#BBBDC3]">
+    <header className="border-b">
+      <nav className="container flex items-center justify-between py-4 ">
+        <div className="text-2xl font-semibold">
+          <span className="text-[#4086F5]">Stay</span>
+          <span className="text-[#152C5B]">hub</span>
+        </div>
+        <ul className="flex items-center gap-4 ml-8 text-[#152C5B]">
           <a href="/">
-            <li className="hover:text-white">Home</li>
+            <li className="hover:text-[#4086F5]">Home</li>
           </a>
           <a href="">
-            <li className="hover:text-white">Featured</li>
+            <li className="hover:text-[#4086F5]">Featured</li>
           </a>
           <a href="">
-            <li className="hover:text-white">Services</li>
+            <li className="hover:text-[#4086F5]">Services</li>
           </a>
           <a href="">
-            <li className="hover:text-white">Contact Us</li>
+            <li className="hover:text-[#4086F5]">Contact Us</li>
           </a>
         </ul>
 
-        {login ? (
+        {/* {login ? (
           <>
             <div
-              className="p-2 border border-white rounded-md flex items-center cursor-pointer relative "
+              className="p-2 border border-[#4086F5] rounded-md flex items-center cursor-pointer relative "
               onClick={() => toggleModal("isModalOpen")}
             >
               <div className="bg-white rounded-full">
                 <FaUserCircle size={24} className="fill-[#4086F5]  " />
               </div>
               <div className="ml-2">
-                <p className="text-sm font-semibold text-white">
+                <p className="text-sm font-semibold text-[#152C5B]">
                   {user?.displayName}
                 </p>
               </div>
@@ -85,7 +88,7 @@ export default function Header({ classNames }) {
             <div className="flex items-center gap-4">
               <button
                 onClick={() => toggleModal("isOpen")}
-                className="text-white py-2 px-4 border border-white rounded-md"
+                className="text-[#152C5B] py-2 px-4 border border-[#4086F5] rounded-md"
               >
                 Sign In
               </button>
@@ -97,10 +100,10 @@ export default function Header({ classNames }) {
               </button>
             </div>
           </>
-        )}
+        )} */}
       </nav>
 
-      {modalState.isOpen && (
+      {/* {modalState.isOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-10 flex items-center justify-center z-50">
           <div
             className="absolute inset-0 bg-black opacity-50"
@@ -162,7 +165,7 @@ export default function Header({ classNames }) {
             </div>
           </div>
         </div>
-      )}
+      )} */}
     </header>
   );
 }

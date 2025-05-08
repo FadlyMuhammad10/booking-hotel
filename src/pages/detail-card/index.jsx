@@ -15,39 +15,30 @@ import {
 } from "@/components/ui/table";
 
 import DynamicSelect from "@/components/dynamicSelect";
+import { Button } from "@/components/ui/button";
 import { AuthContext } from "@/context/AuthContext";
 import { getRoomsById } from "@/services/guestService";
 import formatRupiah from "@/utils/formatRupiah";
 import { useContext, useState } from "react";
-import { IoMdPerson } from "react-icons/io";
 import { IoClose, IoRestaurantOutline, IoWifiOutline } from "react-icons/io5";
 import { LuCircleParking } from "react-icons/lu";
-import { MdKeyboardArrowRight, MdOutlinePeopleOutline } from "react-icons/md";
+import { MdOutlinePeopleOutline } from "react-icons/md";
 import { PiElevatorLight, PiSwimmingPoolDuotone } from "react-icons/pi";
 import { Ri24HoursLine } from "react-icons/ri";
 import { TbAirConditioning, TbRulerMeasure } from "react-icons/tb";
 import { TiStarFullOutline } from "react-icons/ti";
-import {
-  Link,
-  useLoaderData,
-  useNavigate,
-  useSearchParams,
-} from "react-router-dom";
-import Header from "../../components/header";
-import Search from "../../components/search";
+import { useLoaderData, useNavigate } from "react-router-dom";
 
 export default function DetailCard() {
-  const { login } = useContext(AuthContext);
+  // const { login } = useContext(AuthContext);
   const hotel = useLoaderData();
   // console.log(hotel);
 
-  const [searchParams] = useSearchParams();
-
-  const startDate = searchParams.get("startDate");
-  const endDate = searchParams.get("endDate");
+  const [startDate, setStartDate] = useState({});
 
   const [isOpen, setIsOpen] = useState(false);
   const [room, setRoom] = useState({});
+  const [duration, setDuration] = useState({});
 
   const navigate = useNavigate();
 
@@ -57,6 +48,13 @@ export default function DetailCard() {
     setSelectedRoomUnits((prevSelectedRoomUnits) => ({
       ...prevSelectedRoomUnits,
       [roomId]: unit,
+    }));
+  };
+
+  const handleDateChange = (e, roomId) => {
+    setStartDate((prevStartDate) => ({
+      ...prevStartDate,
+      [roomId]: e.target.value,
     }));
   };
 
@@ -71,6 +69,36 @@ export default function DetailCard() {
     setIsOpen(false);
   };
 
+  // Fungsi untuk menambah durasi kamar spesifik
+  const incrementDuration = (roomId) => {
+    setDuration((prevDuration) => ({
+      ...prevDuration,
+      [roomId]: (prevDuration[roomId] || 0) + 1,
+    }));
+  };
+
+  const endDate = (startDate, duration) => {
+    const date = new Date(startDate);
+    date.setDate(date.getDate() + duration);
+    return date;
+  };
+
+  // Fungsi untuk mengurangi durasi kamar spesifik
+  const decrementDuration = (roomId) => {
+    setDuration((prevDuration) => {
+      const currentDuration = prevDuration[roomId] || 0;
+      if (currentDuration > 0) {
+        return {
+          ...prevDuration,
+          [roomId]: currentDuration - 1,
+        };
+      }
+      return prevDuration;
+    });
+  };
+
+  const generateUniqueCode = Math.floor(10000 + Math.random() * 900);
+
   const handleChooseRoom = async (roomId) => {
     const selectedUnit = selectedRoomUnits[roomId];
 
@@ -79,30 +107,34 @@ export default function DetailCard() {
       return;
     }
 
-    console.log("Selected Hotel ID:", hotel._id);
-    console.log("Selected Room ID:", roomId);
-    console.log("Selected Room Unit Id:", selectedUnit);
+    // console.log("Selected Hotel ID:", hotel._id);
+    // console.log("Selected Room ID:", roomId);
+    // console.log("Selected Room Unit Id:", selectedUnit);
+    // console.log("Duration:", duration[roomId] || 0);
+    // console.log("Start Date:", startDate[roomId]);
 
-    if (login) {
-      navigate(`/booking?startDate=${startDate}&endDate=${endDate}`);
-    } else {
-      alert("Please login first!", navigate(`/`));
-    }
+    // if (login) {
+    navigate(`/hotel/${hotel._id}/booking`, {
+      state: {
+        roomId: roomId,
+        roomUnitId: selectedUnit,
+        duration: duration[roomId] || 0,
+        startDate: new Date(startDate[roomId]).toISOString("yyyy-MM-dd"),
+        endDate: endDate(startDate[roomId], duration[roomId] || 0).toISOString(
+          "yyyy-MM-dd"
+        ),
+        uniqueCode: generateUniqueCode,
+      },
+    });
+    // } else {
+    //   alert("Please login first!", navigate(`/`));
+    // }
   };
 
   return (
     <>
       <div>
-        <div className="bg-blue-800 w-full h-[204px] relative">
-          <Header
-            classNames={"absolute top-0 left-0 w-full z-10 bg-transparent"}
-          />
-          <div className="container relative top-[100%] -translate-y-1/2 z-10">
-            <Search />
-          </div>
-        </div>
-
-        <div className="container relative flex flex-row gap-8 mt-28 ">
+        <div className="container relative flex flex-row gap-8 mt-16 ">
           <div className="w-[70%] rounded-sm">
             <Carousel className="w-full">
               <CarouselContent>
@@ -135,13 +167,7 @@ export default function DetailCard() {
             </div>
             <div className="border rounded-lg p-5">
               <div className="flex items-center justify-between mb-4">
-                <h2 className="font-semibold">Facilities</h2>
-                <div className="inline-flex items-center gap-1 text-[#3258E8] text-sm hover:text-blue-500">
-                  <Link to="" className="">
-                    See All
-                  </Link>
-                  <MdKeyboardArrowRight size={20} />
-                </div>
+                <h2 className="font-semibold text-[#152C5B]">Facilities</h2>
               </div>
               <div className="grid grid-cols-2  gap-4 items-center ">
                 <div className="flex flex-row items-center gap-2 ">
@@ -181,7 +207,9 @@ export default function DetailCard() {
           <div className="max-w-5xl">
             <div className="flex items-center justify-between">
               <div className="flex flex-col gap-1">
-                <h1 className="text-2xl font-semibold">{hotel?.name}</h1>
+                <h1 className="text-2xl font-semibold text-[#152C5B]">
+                  {hotel?.name}
+                </h1>
                 <span className="flex flex-row gap-1">
                   {Array.from({ length: hotel?.rating }).map((_, index) => (
                     <TiStarFullOutline
@@ -200,27 +228,31 @@ export default function DetailCard() {
               </button>
             </div>
             <div
-              className="mt-4"
+              className="mt-4 text-[#848484]"
               dangerouslySetInnerHTML={{ __html: hotel?.description }}
             ></div>
             <div className="my-10">
-              <h1 className="text-xl font-semibold" id="room">
+              <h1 className="text-xl font-semibold text-[#152C5B]" id="room">
                 Available Type Rooms
               </h1>
               <Table className="mt-4 border">
                 <TableHeader className="bg-gray-100 ">
                   <TableRow>
-                    <TableHead className=" border-r font-semibold">
+                    <TableHead className="w-36 border-r font-semibold">
                       Type Room
                     </TableHead>
-                    <TableHead className="w-32  border-r font-semibold">
-                      Guests
-                    </TableHead>
-                    <TableHead className="w-56 border-r font-semibold">
+
+                    <TableHead className="w-16 border-r font-semibold">
                       Price / Night
                     </TableHead>
+                    <TableHead className="w-32  border-r font-semibold">
+                      Duration
+                    </TableHead>
+                    <TableHead className="w-32  border-r font-semibold">
+                      Start Date
+                    </TableHead>
                     <TableHead className="w-20 border-r">Select Room</TableHead>
-                    <TableHead className="w-56 border-r"></TableHead>
+                    <TableHead className="w-20 border-r"></TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -232,24 +264,55 @@ export default function DetailCard() {
                       <TableRow key={i}>
                         <TableCell className=" border-r ">
                           <span
-                            className="font-bold text-lg hover:text-orange-600 cursor-pointer"
+                            className="font-bold text-lg hover:text-orange-600 cursor-pointer text-[#152C5B]"
                             onClick={() => toggleModalOpen(room._id)}
                           >
                             {room.name}
                           </span>
                         </TableCell>
-                        <TableCell className="border-r ">
-                          <div className="flex items-center space-x-1">
-                            {Array.from({ length: room.capacity }).map(
-                              (_, index) => (
-                                <IoMdPerson size={20} key={index} />
-                              )
-                            )}
-                          </div>
-                        </TableCell>
                         <TableCell className=" border-r text-md font-semibold text-orange-600">
                           {formatRupiah(room.price)}
                         </TableCell>
+                        <TableCell className="border-r ">
+                          <div className="inline-flex items-center justify-between w-full shadow-sm">
+                            <Button
+                              variant="primary"
+                              size="icon"
+                              onClick={() => decrementDuration(room._id)}
+                              className="bg-[#E74C3C] text-white "
+                            >
+                              -
+                            </Button>
+                            <span className="text-[#152C5B]">
+                              {duration[room._id] || 0}
+                            </span>
+                            <Button
+                              variant="primary"
+                              size="icon"
+                              onClick={() => incrementDuration(room._id)}
+                              className="bg-[#1ABC9C] text-white "
+                            >
+                              +
+                            </Button>
+                          </div>
+                        </TableCell>
+                        <TableCell className=" border-r text-center">
+                          <div className="flex items-center gap-[10px] transition-all duration-300 focus-within:ring-2 focus-within:ring-[#3258E8] overflow-hidden">
+                            <img
+                              src="/assets/icons/calendar-black.svg"
+                              className="w-6 h-6"
+                              alt="icon"
+                            />
+                            <input
+                              type="date"
+                              onChange={(e) => handleDateChange(e, room._id)}
+                              value={startDate[room._id] || ""}
+                              name="started_at"
+                              className="relative border rounded-sm py-2 px-3 appearance-none outline-none w-full bg-transparent font-semibold [&::-webkit-calendar-picker-indicator]:absolute [&::-webkit-calendar-picker-indicator]:w-full [&::-webkit-calendar-picker-indicator]:h-full [&::-webkit-calendar-picker-indicator]:opacity-0"
+                            />
+                          </div>
+                        </TableCell>
+
                         <TableCell className=" border-r ">
                           <DynamicSelect
                             items={room.roomUnits}
@@ -283,7 +346,7 @@ export default function DetailCard() {
       {isOpen && (
         <>
           <div
-            className="fixed inset-0  bg-black bg-opacity-50 flex justify-center items-center"
+            className="fixed inset-0  bg-black bg-opacity-50 flex justify-center items-center text-[#152C5B]"
             onClick={toggleModalClose}
           >
             <div
@@ -291,9 +354,7 @@ export default function DetailCard() {
               onClick={(e) => e.stopPropagation()}
             >
               <div className="flex flex-row justify-between items-center">
-                <h2 className="text-lg font-semibold text-black">
-                  {room?.name}
-                </h2>
+                <h2 className="text-lg font-semibold ">{room?.name}</h2>
                 <button onClick={toggleModalClose}>
                   <IoClose size={20} />
                 </button>
@@ -306,7 +367,6 @@ export default function DetailCard() {
                         <CarouselItem key={i}>
                           <div className="">
                             <img
-                              // src="/assets/images/hotel-1.jpg"
                               src={data.image_url}
                               alt=""
                               className="w-full h-[500px] object-cover rounded-sm"
@@ -354,7 +414,7 @@ export default function DetailCard() {
                       Description Room
                     </div>
                     <div
-                      className="text-sm"
+                      className="text-sm text-[#848484]"
                       dangerouslySetInnerHTML={{ __html: room.description }}
                     ></div>
                   </div>
