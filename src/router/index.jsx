@@ -1,12 +1,10 @@
+import Layout from "@/components/Layout";
 import BookingPage from "@/pages/booking";
+import CompletedBookingPage from "@/pages/booking/completed";
 import DetailCard from "@/pages/detail-card";
 import HomePage from "@/pages/home";
-import SearchPage from "@/pages/search";
 import { getHotels, getHotelsById } from "@/services/guestService";
 import { createBrowserRouter } from "react-router-dom";
-import ProtectedRoute from "./protectedRoute";
-import Layout from "@/components/Layout";
-import CompletedBookingPage from "@/pages/booking/completed";
 
 const router = createBrowserRouter([
   {
@@ -40,23 +38,13 @@ const router = createBrowserRouter([
           return hotel;
         },
 
-        // element: <BookingPage />,
-        element: (
-          // <ProtectedRoute>
-          <BookingPage />
-          // </ProtectedRoute>
-        ),
+        element: <BookingPage />,
       },
       {
         path: "/success-booking",
         element: <CompletedBookingPage />,
       },
     ],
-  },
-
-  {
-    path: "/search",
-    element: <SearchPage />,
   },
 ]);
 

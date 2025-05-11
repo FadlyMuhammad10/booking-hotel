@@ -10,7 +10,7 @@ export default function HomePage() {
           <div className="flex flex-col gap-10">
             <div className="w-[310px] h-[260px] border rounded-2xl relative">
               <img
-                src="assets/images/prambanan.jpg"
+                src="/assets/images/prambanan.jpg"
                 alt=""
                 className="w-full h-full object-cover rounded-2xl"
               />
@@ -21,7 +21,7 @@ export default function HomePage() {
             </div>
             <div className="w-[310px] h-[260px] border rounded-2xl relative">
               <img
-                src="assets/images/pura.jpg"
+                src="/assets/images/pura.jpg"
                 alt=""
                 className="w-full h-full object-cover rounded-2xl"
               />
@@ -33,7 +33,7 @@ export default function HomePage() {
           </div>
           <div className="border w-[45%] rounded-2xl relative -z-10">
             <img
-              src="assets/images/borobudur.jpg"
+              src="/assets/images/borobudur.jpg"
               alt=""
               className="w-full h-full object-cover rounded-2xl -z-10"
             />

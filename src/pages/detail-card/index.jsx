@@ -16,10 +16,9 @@ import {
 
 import DynamicSelect from "@/components/dynamicSelect";
 import { Button } from "@/components/ui/button";
-import { AuthContext } from "@/context/AuthContext";
 import { getRoomsById } from "@/services/guestService";
 import formatRupiah from "@/utils/formatRupiah";
-import { useContext, useState } from "react";
+import { useState } from "react";
 import { IoClose, IoRestaurantOutline, IoWifiOutline } from "react-icons/io5";
 import { LuCircleParking } from "react-icons/lu";
 import { MdOutlinePeopleOutline } from "react-icons/md";
@@ -30,9 +29,8 @@ import { TiStarFullOutline } from "react-icons/ti";
 import { useLoaderData, useNavigate } from "react-router-dom";
 
 export default function DetailCard() {
-  // const { login } = useContext(AuthContext);
   const hotel = useLoaderData();
-  // console.log(hotel);
+  // console.log("hotel", hotel);
 
   const [startDate, setStartDate] = useState({});
 
@@ -113,7 +111,6 @@ export default function DetailCard() {
     // console.log("Duration:", duration[roomId] || 0);
     // console.log("Start Date:", startDate[roomId]);
 
-    // if (login) {
     navigate(`/hotel/${hotel._id}/booking`, {
       state: {
         roomId: roomId,
@@ -126,9 +123,6 @@ export default function DetailCard() {
         uniqueCode: generateUniqueCode,
       },
     });
-    // } else {
-    //   alert("Please login first!", navigate(`/`));
-    // }
   };
 
   return (
